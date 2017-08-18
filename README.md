@@ -2,5 +2,7 @@
 matrix factorization for recommender system
 
 FunkSVD
+
 FunkSVDwithR
+
 BiasSVD
