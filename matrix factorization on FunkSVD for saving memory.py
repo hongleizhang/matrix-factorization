@@ -32,10 +32,7 @@ class Basic_MF(object):
 		self.FACTOR=FACTOR
 		self.init_model()
 
-	'''
-	load data
-	return generator
-	'''
+
 	def load_data(self,flag='train',sep=' ',random_state=0,size=0.8):
 		'''
 		flag- train or test
@@ -59,11 +56,6 @@ class Basic_MF(object):
 						yield (int(u)-1,int(i)-1,float(r))
 
 
-
-	'''
-	initilize the model
-	create the P and Q matrix
-	'''
 	def init_model(self):
 		self.P=np.random.rand(self.USER_NUM,self.FACTOR)/(self.FACTOR**0.5)
 		self.Q=np.random.rand(self.ITEM_NUM,self.FACTOR)/(self.FACTOR**0.5)
@@ -80,7 +72,7 @@ class Basic_MF(object):
 		beta- parameter of regularization term
 		'''
 		old_e=0.0
-		# self.cost_of_epoch=[]
+		self.cost_of_epoch=[]
 		for epoch in range(epochs):
 			print("current epoch is {}".format(epoch))
 			current_e=0.0
@@ -93,19 +85,13 @@ class Basic_MF(object):
 				self.P[u]+=alpha*(err*self.Q[i]-beta*self.P[u])
 				self.Q[i]+=alpha*(err*self.P[u]-beta*self.Q[i])
 				current_e+=(beta/2)*(sum(pow(self.P[u],2))+sum(pow(self.Q[i],2))) #regularization term
-			# self.cost_of_epoch.append(current_e)
+			self.cost_of_epoch.append(current_e)
 			print('cost is {}'.format(current_e))
 			if abs(current_e - old_e) < theta:
 				break
 			old_e=current_e
 			alpha*=0.9
 
-
-	def reload_model(self):
-		model=self.read_model()
-		self.P=model['P']
-		self.Q=model['Q']
-		pass
 
 	def predict_rating(self,user_id,item_id):
 		'''
@@ -134,9 +120,7 @@ class Basic_MF(object):
 		return items
 
 
-	'''
-	test the model
-	'''
+
 	def test_rmse(self):
 		'''
 		test the model and return the value of rmse
@@ -171,13 +155,19 @@ class Basic_MF(object):
 		save the model to pickle,P,Q and rmse
 		'''
 		data_dict={'P':self.P,'Q':self.Q}
-		f=open('basic-mf-ft.pkl','wb')
+		f=open('funk-svd.pkl','wb')
 		pickle.dump(data_dict,f)
 		pass
+
 	def read_model(self):
-		f=open('basic-mf-ft.pkl','rb')
+		'''
+		reload the model from local disk
+		'''
+		f=open('funk-svd.pkl','rb')
 		model=pickle.load(f)
-		return model
+		self.P=model['P']
+		self.Q=model['Q']
+		pass
 
 
 
